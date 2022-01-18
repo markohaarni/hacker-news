@@ -6,7 +6,7 @@ import StoriesListItem from './StoriesListItem';
 
 const STORIES_TO_LOAD = 20;
 
-export function StoriesList() {
+export default function StoriesList() {
   const dispatch = useDispatch();
 
   const storyIds = useSelector(
