@@ -50,7 +50,7 @@ export default function SingleStoryPage() {
   }
 
   return (
-    <article className="max-w-screen-md p-6 sm:flex">
+    <article className="max-w-screen-md p-6 sm:flex m-auto">
       <div className="mb-8 mr-8">
         <Link to="/">
           <button className="border rounded py-1 px-4">Back</button>
