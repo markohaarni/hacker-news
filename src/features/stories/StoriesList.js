@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { isEqual } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { fetchTopStories, fetchTopStoryIds } from './storiesSlice';
 import StoriesListItem from './StoriesListItem';
 
@@ -50,7 +51,9 @@ export default function StoriesList() {
     content = (
       <article>
         {stories.map((story, index) => (
-          <StoriesListItem key={story.id} story={story} index={index} />
+          <Link key={story.id} to={`/${story.id}`}>
+            <StoriesListItem story={story} index={index} />
+          </Link>
         ))}
       </article>
     );

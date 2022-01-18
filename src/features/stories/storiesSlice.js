@@ -37,16 +37,32 @@ export const fetchTopStories = createAsyncThunk(
     const fetchStories = storyIds.map((storyId) =>
       getJson(`${BASE_URL}/item/${storyId}.json`)
     );
-    
+
     const stories = await Promise.all(fetchStories);
 
     return stories;
   }
 );
 
+export const fetchComments = createAsyncThunk(
+  'stories/fetchComments',
+  async (commentIds, { dispatch }) => {
+    dispatch(resetComments());
+
+    const fetchComments = commentIds.map((commentId) =>
+      getJson(`${BASE_URL}/item/${commentId}.json`)
+    );
+
+    const comments = await Promise.all(fetchComments);
+
+    return comments;
+  }
+);
+
 const initialState = {
   storyIds: [],
   stories: [],
+  comments: [],
   status: 'idle',
   error: null,
 };
@@ -54,6 +70,11 @@ const initialState = {
 const storiesSlice = createSlice({
   name: 'stories',
   initialState,
+  reducers: {
+    resetComments: (state) => {
+      state.comments = [];
+    },
+  },
   extraReducers: function (builder) {
     builder
       .addCase(fetchTopStoryIds.pending, (state) => {
@@ -76,8 +97,23 @@ const storiesSlice = createSlice({
       .addCase(fetchTopStories.rejected, (state, { error }) => {
         state.status = 'failed';
         state.error = error.message;
+      })
+      .addCase(fetchComments.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchComments.fulfilled, (state, action) => {
+        state.comments = state.comments.concat(action.payload);
+      })
+      .addCase(fetchComments.rejected, (state, { error }) => {
+        state.status = 'failed';
+        state.error = error.message;
       });
   },
 });
 
 export default storiesSlice.reducer;
+
+export const { resetComments } = storiesSlice.actions;
+
+export const selectStoryByID = (state, storyId) =>
+  state.stories.stories.find((story) => story.id === storyId);
