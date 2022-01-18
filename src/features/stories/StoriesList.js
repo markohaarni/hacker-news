@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchTopStories, fetchTopStoryIds } from './storiesSlice';
 import StoriesListItem from './StoriesListItem';
+import InfiniteScroll from '../../components/InfiniteScroll';
 
 const STORIES_TO_LOAD = 20;
 
@@ -42,20 +43,32 @@ export default function StoriesList() {
     }
   }, [storyIds, fromIndex, dispatch]);
 
+  function loadNextStories() {
+    setFromIndex((prevIndex) => prevIndex + STORIES_TO_LOAD);
+  }
+
+  const loadingElement = <p>Loading...</p>;
+
   let content;
-  if (storiesStatus === 'loading') {
-    content = <p>Loading...</p>;
-  } else if (storiesStatus === 'failed') {
+  if (storiesStatus === 'loading' && stories.length === 0) {
+    content = loadingElement;
+  } else if (storiesStatus === 'failed' && stories.length === 0) {
     content = <p className="text-red-500">{error}</p>;
   } else {
     content = (
-      <article>
+      <InfiniteScroll
+        dataLength={stories.length}
+        onNext={loadNextStories}
+        hasMore={stories.length !== storyIds.length}
+        loadingElem={loadingElement}
+        error={error && 'Error loading next stories'}
+      >
         {stories.map((story, index) => (
           <Link key={story.id} to={`/${story.id}`}>
             <StoriesListItem story={story} index={index} />
           </Link>
         ))}
-      </article>
+      </InfiniteScroll>
     );
   }
 
